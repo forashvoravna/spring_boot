@@ -21,6 +21,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         this.userDetailsService = userDetailsService;
         this.jwtTokenProvider = jwtTokenProvider;
     }
+
     @Bean
     public AuthenticationManager authenticationManager() throws Exception {
         return super.authenticationManager();
@@ -35,7 +36,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/register").permitAll()
                 .antMatchers("/api/login").permitAll()
                 .antMatchers("/api/transaction/*").hasRole("ADMIN")
-                .antMatchers("/api/transaction/get/*").hasAnyRole("USER","ADMIN")
+                .antMatchers("/api/transaction/get/*").hasAnyRole("USER", "ADMIN")
                 .anyRequest().authenticated()
                 .and()
                 .apply(new JwtConfigurer(jwtTokenProvider));

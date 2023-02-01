@@ -8,18 +8,18 @@ import java.util.Optional;
 
 public final class SecurityUtils {
 
-    private SecurityUtils(){
+    private SecurityUtils() {
 
     }
-    public static Optional<Object> getCurrentUserName(){
+
+    public static Optional<Object> getCurrentUserName() {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         return Optional.ofNullable(securityContext.getAuthentication())
                 .map(authentication -> {
-                    if (authentication.getPrincipal() instanceof UserDetails){
-                        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+                    if (authentication.getPrincipal() instanceof UserDetails userDetails) {
                         return userDetails.getUsername();
                     } else if (authentication.getPrincipal() instanceof String) {
-                       return authentication.getPrincipal();
+                        return authentication.getPrincipal();
 
                     }
                     return null;

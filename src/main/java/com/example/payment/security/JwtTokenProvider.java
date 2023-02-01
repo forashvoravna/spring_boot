@@ -12,7 +12,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -23,13 +22,11 @@ import java.util.Set;
 
 @Component
 public class JwtTokenProvider {
+    private final UserDetailsService userDetailsService;
     @Value("${jwt.token.secret}")
     private String secret;
-
     @Value("${jwt.token.validity}")
     private long validityMilliSeconds;
-
-    private final UserDetailsService userDetailsService;
 
     public JwtTokenProvider(UserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
@@ -46,9 +43,9 @@ public class JwtTokenProvider {
         secret = Base64.getEncoder().encodeToString(secret.getBytes());
     }
 
-    public String createToken(String username, Set<Role> roles){
+    public String createToken(String username, Set<Role> roles) {
         Claims claims = Jwts.claims().setSubject(username);
-        claims.put("roles",roles);
+        claims.put("roles", roles);
 
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityMilliSeconds);
@@ -57,7 +54,7 @@ public class JwtTokenProvider {
                 .setClaims(claims)
                 .setIssuedAt(now)
                 .setExpiration(validity)
-                .signWith(SignatureAlgorithm.HS256,secret)
+                .signWith(SignatureAlgorithm.HS256, secret)
                 .compact();
 
     }
@@ -65,10 +62,7 @@ public class JwtTokenProvider {
     public boolean checkValidateToken(String token) {
         Jws<Claims> claimsJws = Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
 
-        if (claimsJws.getBody().getExpiration().before(new Date())){
-            return false;
-        }
-        return true;
+        return !claimsJws.getBody().getExpiration().before(new Date());
     }
 
     public String resolvedToken(HttpServletRequest request) {
@@ -83,7 +77,7 @@ public class JwtTokenProvider {
 
     public Authentication getAuthentication(String token) {
         UserDetails userDetails = userDetailsService.loadUserByUsername(getUser(token));
-        return new UsernamePasswordAuthenticationToken(userDetails,"",userDetails.getAuthorities());
+        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
     private String getUser(String token) {

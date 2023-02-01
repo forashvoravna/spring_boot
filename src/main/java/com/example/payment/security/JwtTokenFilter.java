@@ -1,6 +1,5 @@
 package com.example.payment.security;
 
-import org.springframework.boot.autoconfigure.neo4j.Neo4jProperties;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
@@ -21,13 +20,13 @@ public class JwtTokenFilter extends GenericFilterBean {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException {
-        String token =  jwtTokenProvider.resolvedToken((HttpServletRequest) request);
-        if (token != null && jwtTokenProvider.checkValidateToken(token)){
+        String token = jwtTokenProvider.resolvedToken((HttpServletRequest) request);
+        if (token != null && jwtTokenProvider.checkValidateToken(token)) {
             Authentication authentication = jwtTokenProvider.getAuthentication(token);
-            if (authentication != null){
+            if (authentication != null) {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         }
-        filterChain.doFilter(request,response);
+        filterChain.doFilter(request, response);
     }
 }

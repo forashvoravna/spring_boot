@@ -31,18 +31,18 @@ public class UserJwtController {
 
 
     @PostMapping("/login")
-    public ResponseEntity login(@RequestBody LoginVM loginVM){
+    public ResponseEntity login(@RequestBody LoginVM loginVM) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginVM.getUsername(),
                 loginVM.getPassword()));
-        User user =userRepository.findByUsername(loginVM.getUsername());
+        User user = userRepository.findByUsername(loginVM.getUsername());
 
-        if (user == null){
+        if (user == null) {
             throw new UsernameNotFoundException("This user not found");
         }
-        String token = jwtTokenProvider.createToken(user.getUsername(),user.getRoles());
-        Map<Object,Object> map = new HashMap<>();
-        map.put("username",user.getUsername());
-        map.put("token",token);
+        String token = jwtTokenProvider.createToken(user.getUsername(), user.getRoles());
+        Map<Object, Object> map = new HashMap<>();
+        map.put("username", user.getUsername());
+        map.put("token", token);
 
         return ResponseEntity.ok(map);
     }
