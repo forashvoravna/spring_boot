@@ -1,5 +1,6 @@
 package com.example.payment.domen;
 
+import com.example.payment.domen.enumreation.Status;
 import com.sun.istack.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -26,8 +27,13 @@ public class User implements Serializable {
     String username;
     String password;
     String email;
+    String lastName;
+    String firstName;
 
-    @ManyToMany
+    @Enumerated(EnumType.STRING)
+    Status status;
+
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_role",
             joinColumns = {@JoinColumn(name = "user_id",referencedColumnName = "id")},
